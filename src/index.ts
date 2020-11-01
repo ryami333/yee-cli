@@ -11,9 +11,9 @@ const yeelightService = new YeelightService();
 import { Command } from "commander";
 const program = new Command();
 
-console.info(
-  "⚠️  Make sure you enabled the LAN Control option in the Yeelight app."
-);
+/*
+ * ⚠️ Make sure you enabled the LAN Control option in the Yeelight app.
+ */
 
 async function getDevices(): Promise<IYeelightDevice[]> {
   let devices: IYeelightDevice[] = [];
@@ -43,6 +43,8 @@ program
         brightness: device.brightness.value,
       }))
     );
+
+    process.exit(1);
   });
 
 program
@@ -59,6 +61,7 @@ program
 
     if (responses.every((response) => response.status === 200)) {
       console.log("Done with no errors");
+      process.exit(1);
       return;
     }
 
@@ -67,6 +70,7 @@ program
       .filter(Boolean);
 
     console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+    process.exit(2);
   });
 
 program
@@ -83,7 +87,7 @@ program
 
     if (responses.every((response) => response.status === 200)) {
       console.log("Done with no errors");
-      return;
+      process.exit(1);
     }
 
     const errorMessages = responses
@@ -92,7 +96,7 @@ program
 
     console.log(`Done with errors:\n${errorMessages.join("\n")}`);
 
-    process.exit();
+    process.exit(2);
   });
 
 program
@@ -121,7 +125,7 @@ program
 
     if (responses.every((response) => response.status === 200)) {
       console.log("Done with no errors");
-      return;
+      process.exit(1);
     }
 
     const errorMessages = responses
@@ -129,8 +133,7 @@ program
       .filter(Boolean);
 
     console.log(`Done with errors:\n${errorMessages.join("\n")}`);
-
-    process.exit();
+    process.exit(2);
   });
 
 program
@@ -147,7 +150,6 @@ program
           carry: Promise<IYeelightMethodResponse>[],
           device
         ): Promise<IYeelightMethodResponse>[] => {
-          console.log(device.model);
           return [
             ...carry,
             device.setRgb("#FF7900"),
@@ -160,7 +162,7 @@ program
 
     if (responses.every((response) => response.status === 200)) {
       console.log("Done with no errors");
-      return;
+      process.exit(1);
     }
 
     const errorMessages = responses
@@ -168,8 +170,7 @@ program
       .filter(Boolean);
 
     console.log(`Done with errors:\n${errorMessages.join("\n")}`);
-
-    process.exit();
+    process.exit(2);
   });
 
 program.parseAsync(process.argv);

@@ -7,7 +7,9 @@ var _commander = require("commander");
 
 const yeelightService = new _yeelightService.YeelightService();
 const program = new _commander.Command();
-console.info("⚠️  Make sure you enabled the LAN Control option in the Yeelight app.");
+/*
+ * ⚠️ Make sure you enabled the LAN Control option in the Yeelight app.
+ */
 
 async function getDevices() {
   let devices = [];
@@ -27,6 +29,7 @@ program.command("list").description("Show the connected devices").action(async (
     rgb: device.rgb.value,
     brightness: device.brightness.value
   })));
+  process.exit(1);
 });
 program.command("off").description("Turn off all connected devices").action(async () => {
   const devices = await getDevices();
@@ -35,11 +38,13 @@ program.command("off").description("Turn off all connected devices").action(asyn
 
   if (responses.every(response => response.status === 200)) {
     console.log("Done with no errors");
+    process.exit(1);
     return;
   }
 
   const errorMessages = responses.map(response => response.errorMessage).filter(Boolean);
   console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+  process.exit(2);
 });
 program.command("on").description("Turn on all connected devices").action(async () => {
   const devices = await getDevices();
@@ -48,12 +53,12 @@ program.command("on").description("Turn on all connected devices").action(async 
 
   if (responses.every(response => response.status === 200)) {
     console.log("Done with no errors");
-    return;
+    process.exit(1);
   }
 
   const errorMessages = responses.map(response => response.errorMessage).filter(Boolean);
   console.log(`Done with errors:\n${errorMessages.join("\n")}`);
-  process.exit();
+  process.exit(2);
 });
 program.command("neutral").description("Set devices to neutral white light").action(async (cmd, options) => {
   const devices = await getDevices();
@@ -64,28 +69,27 @@ program.command("neutral").description("Set devices to neutral white light").act
 
   if (responses.every(response => response.status === 200)) {
     console.log("Done with no errors");
-    return;
+    process.exit(1);
   }
 
   const errorMessages = responses.map(response => response.errorMessage).filter(Boolean);
   console.log(`Done with errors:\n${errorMessages.join("\n")}`);
-  process.exit();
+  process.exit(2);
 });
 program.command("warm").description("Set devices to warm white light").action(async (cmd, options) => {
   const devices = await getDevices();
   console.log(`Updating ${devices.length} devices…`);
   const responses = await Promise.all(devices.reduce((carry, device) => {
-    console.log(device.model);
     return [...carry, device.setRgb("#FF7900"), device.setBrightness(100)];
   }, []));
 
   if (responses.every(response => response.status === 200)) {
     console.log("Done with no errors");
-    return;
+    process.exit(1);
   }
 
   const errorMessages = responses.map(response => response.errorMessage).filter(Boolean);
   console.log(`Done with errors:\n${errorMessages.join("\n")}`);
-  process.exit();
+  process.exit(2);
 });
 program.parseAsync(process.argv);
