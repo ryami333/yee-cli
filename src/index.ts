@@ -35,7 +35,7 @@ program
   .action(async () => {
     const devices = await getDevices();
 
-    console.log(devices.map((device) => device.id));
+    console.log(devices.map((device) => device.rgb.value));
   });
 
 program
@@ -44,7 +44,7 @@ program
   .action(async () => {
     const devices = await getDevices();
 
-    console.log(`Turning off ${devices.length} devices.`);
+    console.log(`Turning off ${devices.length} devices…`);
 
     const responses = await Promise.all(
       devices.map((device) => device.setPower("off", "smooth"))
@@ -59,7 +59,7 @@ program
       .map((response) => response.errorMessage)
       .filter(Boolean);
 
-    console.log(`Done with errors:\n${errorMessages.join("/n")}`);
+    console.log(`Done with errors:\n${errorMessages.join("\n")}`);
   });
 
 program
@@ -68,7 +68,7 @@ program
   .action(async () => {
     const devices = await getDevices();
 
-    console.log(`Turning on ${devices.length} devices.`);
+    console.log(`Turning on ${devices.length} devices…`);
 
     const responses = await Promise.all(
       devices.map((device) => device.setPower("on", "smooth"))
@@ -83,7 +83,86 @@ program
       .map((response) => response.errorMessage)
       .filter(Boolean);
 
-    console.log(`Done with errors:\n${errorMessages.join("/n")}`);
+    console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+
+    process.exit();
+  });
+
+program
+  .command("neutral")
+  .description("Set devices to neutral white light")
+  .action(async (cmd, options) => {
+    const devices = await getDevices();
+
+    console.log(`Updating ${devices.length} devices…`);
+
+    const responses = await Promise.all(
+      devices.reduce(
+        (
+          carry: Promise<IYeelightMethodResponse>[],
+          device
+        ): Promise<IYeelightMethodResponse>[] => {
+          return [
+            ...carry,
+            device.setColorTemperature(4271),
+            device.setBrightness(100),
+          ];
+        },
+        []
+      )
+    );
+
+    if (responses.every((response) => response.status === 200)) {
+      console.log("Done with no errors");
+      return;
+    }
+
+    const errorMessages = responses
+      .map((response) => response.errorMessage)
+      .filter(Boolean);
+
+    console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+
+    process.exit();
+  });
+
+program
+  .command("warm")
+  .description("Set devices to warm white light")
+  .action(async (cmd, options) => {
+    const devices = await getDevices();
+
+    console.log(`Updating ${devices.length} devices…`);
+
+    const responses = await Promise.all(
+      devices.reduce(
+        (
+          carry: Promise<IYeelightMethodResponse>[],
+          device
+        ): Promise<IYeelightMethodResponse>[] => {
+          console.log(device.model);
+          return [
+            ...carry,
+            device.setRgb("#FF7900"),
+            device.setBrightness(100),
+          ];
+        },
+        []
+      )
+    );
+
+    if (responses.every((response) => response.status === 200)) {
+      console.log("Done with no errors");
+      return;
+    }
+
+    const errorMessages = responses
+      .map((response) => response.errorMessage)
+      .filter(Boolean);
+
+    console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+
+    process.exit();
   });
 
 program.parseAsync(process.argv);
