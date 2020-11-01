@@ -1,9 +1,16 @@
 #!/usr/bin/env node
 "use strict";
 
-var _tsNodeYeelight = require("ts-node-yeelight");
+var _yeelightService = require("yeelight-service");
 
-const yeelight = new _tsNodeYeelight.Yeelight();
-yeelight.discover().then(() => {
-  console.log(yeelight.devices);
+var _commander = require("commander");
+
+const yeelightService = new _yeelightService.YeelightService();
+const program = new _commander.Command();
+console.info("⚠️  Make sure you enabled the LAN Control option in the Yeelight app.");
+program.command("list").description("Show the connected devices").action(() => {
+  yeelightService.devices.subscribe(devices => {
+    console.log(devices.map(device => device.id));
+  });
 });
+program.parse(process.argv);

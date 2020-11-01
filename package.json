@@ -19,6 +19,6 @@
   },
   "dependencies": {
     "commander": "^6.2.0",
-    "ts-node-yeelight": "^0.0.12"
+    "yeelight-service": "^1.0.2"
   }
 }
