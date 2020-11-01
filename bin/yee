@@ -36,4 +36,17 @@ program.command("off").description("Turn off all connected devices").action(asyn
   const errorMessages = responses.map(response => response.errorMessage).filter(Boolean);
   console.log(`Done with errors:\n${errorMessages.join("/n")}`);
 });
+program.command("on").description("Turn on all connected devices").action(async () => {
+  const devices = await getDevices();
+  console.log(`Turning on ${devices.length} devices.`);
+  const responses = await Promise.all(devices.map(device => device.setPower("on", "smooth")));
+
+  if (responses.every(response => response.status === 200)) {
+    console.log("Done with no errors");
+    return;
+  }
+
+  const errorMessages = responses.map(response => response.errorMessage).filter(Boolean);
+  console.log(`Done with errors:\n${errorMessages.join("/n")}`);
+});
 program.parseAsync(process.argv);
