@@ -15,5 +15,8 @@
   "scripts": {
     "build": "babel src/**/* --out-file bin/yee && chmod +x bin/yee",
     "start": "node bin/index.js"
+  },
+  "dependencies": {
+    "ts-node-yeelight": "^0.0.12"
   }
 }

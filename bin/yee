@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 "use strict";
 
-const helloWorld = "Hello World";
-console.log(helloWorld);
+var _tsNodeYeelight = require("ts-node-yeelight");
+
+const yeelight = new _tsNodeYeelight.Yeelight();
+yeelight.discover().then(() => {
+  console.log(yeelight.devices);
+});

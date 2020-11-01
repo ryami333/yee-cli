@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
-const helloWorld: string = "Hello World";
+import { Yeelight } from "ts-node-yeelight";
 
-console.log(helloWorld);
+const yeelight = new Yeelight();
+
+yeelight.discover().then(() => {
+  console.log(yeelight.devices);
+});
