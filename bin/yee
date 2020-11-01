@@ -8,9 +8,32 @@ var _commander = require("commander");
 const yeelightService = new _yeelightService.YeelightService();
 const program = new _commander.Command();
 console.info("⚠️  Make sure you enabled the LAN Control option in the Yeelight app.");
-program.command("list").description("Show the connected devices").action(() => {
-  yeelightService.devices.subscribe(devices => {
-    console.log(devices.map(device => device.id));
+
+async function getDevices() {
+  let devices = [];
+  const subscriber = yeelightService.devices.subscribe(foundDevices => {
+    devices = foundDevices;
   });
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  subscriber.unsubscribe();
+  return devices;
+}
+
+program.command("list").description("Show the connected devices").action(async () => {
+  const devices = await getDevices();
+  console.log(devices.map(device => device.id));
 });
-program.parse(process.argv);
+program.command("off").description("Turn off all connected devices").action(async () => {
+  const devices = await getDevices();
+  console.log(`Turning off ${devices.length} devices.`);
+  const responses = await Promise.all(devices.map(device => device.setPower("off", "smooth")));
+
+  if (responses.every(response => response.status === 200)) {
+    console.log("Done with no errors");
+    return;
+  }
+
+  const errorMessages = responses.map(response => response.errorMessage).filter(Boolean);
+  console.log(`Done with errors:\n${errorMessages.join("/n")}`);
+});
+program.parseAsync(process.argv);
