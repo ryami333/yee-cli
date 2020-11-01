@@ -1,0 +1,7 @@
+{
+  "name": "yee-cli",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Mitch Ryan <mitch@mitch-ryan.com>",
+  "license": "MIT"
+}
