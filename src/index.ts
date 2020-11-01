@@ -22,7 +22,7 @@ async function getDevices(): Promise<IYeelightDevice[]> {
     devices = foundDevices;
   });
 
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   subscriber.unsubscribe();
 
