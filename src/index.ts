@@ -35,7 +35,14 @@ program
   .action(async () => {
     const devices = await getDevices();
 
-    console.log(devices.map((device) => device.rgb.value));
+    console.log(
+      devices.map((device) => ({
+        id: device.id,
+        colorTemperature: device.colorTemperature.value,
+        rgb: device.rgb.value,
+        brightness: device.brightness.value,
+      }))
+    );
   });
 
 program
