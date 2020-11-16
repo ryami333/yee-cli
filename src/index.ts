@@ -2,10 +2,8 @@
 
 import { YeelightService } from "yeelight-service";
 import {
-  IYeelight,
   IYeelightDevice,
   IYeelightMethodResponse,
-  YeelightMethodStatusEnum,
 } from "yeelight-service/lib/yeelight.interface";
 import { Command } from "commander";
 import chalk from "chalk";
@@ -105,7 +103,7 @@ program
 program
   .command("neutral")
   .description("Set devices to neutral white light")
-  .action(async (cmd, options) => {
+  .action(async () => {
     const devices = await getDevices();
 
     console.log(`Updating ${devices.length} devices…`);
@@ -142,7 +140,7 @@ program
 program
   .command("warm")
   .description("Set devices to warm white light")
-  .action(async (cmd, options) => {
+  .action(async () => {
     const devices = await getDevices();
 
     console.log(`Updating ${devices.length} devices…`);
