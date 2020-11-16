@@ -23,7 +23,7 @@ async function getDevices(): Promise<IYeelightDevice[]> {
   });
 
   /* Typically takes <20ms, accounting for a full factor. */
-  await new Promise((resolve) => setTimeout(resolve, 200));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   subscriber.unsubscribe();
 
