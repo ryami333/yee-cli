@@ -63,7 +63,7 @@ program
     );
 
     if (responses.every((response) => response.status === 200)) {
-      console.log("Done with no errors");
+      console.log(chalk.green("Done with no errors"));
       process.exit(1);
       return;
     }
@@ -72,7 +72,7 @@ program
       .map((response) => response.errorMessage)
       .filter(Boolean);
 
-    console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+    console.log(chalk.red(`Done with errors:\n${errorMessages.join("\n")}`));
     process.exit(2);
   });
 
@@ -97,7 +97,7 @@ program
       .map((response) => response.errorMessage)
       .filter(Boolean);
 
-    console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+    console.log(chalk.red(`Done with errors:\n${errorMessages.join("\n")}`));
 
     process.exit(2);
   });
@@ -127,7 +127,7 @@ program
     );
 
     if (responses.every((response) => response.status === 200)) {
-      console.log("Done with no errors");
+      console.log(chalk.green("Done with no errors"));
       process.exit(1);
     }
 
@@ -135,7 +135,7 @@ program
       .map((response) => response.errorMessage)
       .filter(Boolean);
 
-    console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+    console.log(chalk.red(`Done with errors:\n${errorMessages.join("\n")}`));
     process.exit(2);
   });
 
@@ -164,7 +164,7 @@ program
     );
 
     if (responses.every((response) => response.status === 200)) {
-      console.log("Done with no errors");
+      console.log(chalk.green("Done with no errors"));
       process.exit(1);
     }
 
@@ -172,7 +172,7 @@ program
       .map((response) => response.errorMessage)
       .filter(Boolean);
 
-    console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+    console.log(chalk.red(`Done with errors:\n${errorMessages.join("\n")}`));
     process.exit(2);
   });
 

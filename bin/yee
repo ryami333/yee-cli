@@ -43,13 +43,13 @@ program.command("off").description("Turn off all connected devices").action(asyn
   const responses = await Promise.all(devices.map(device => device.setPower("off", "smooth")));
 
   if (responses.every(response => response.status === 200)) {
-    console.log("Done with no errors");
+    console.log(_chalk.default.green("Done with no errors"));
     process.exit(1);
     return;
   }
 
   const errorMessages = responses.map(response => response.errorMessage).filter(Boolean);
-  console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+  console.log(_chalk.default.red(`Done with errors:\n${errorMessages.join("\n")}`));
   process.exit(2);
 });
 program.command("on").description("Turn on all connected devices").action(async () => {
@@ -63,7 +63,7 @@ program.command("on").description("Turn on all connected devices").action(async 
   }
 
   const errorMessages = responses.map(response => response.errorMessage).filter(Boolean);
-  console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+  console.log(_chalk.default.red(`Done with errors:\n${errorMessages.join("\n")}`));
   process.exit(2);
 });
 program.command("neutral").description("Set devices to neutral white light").action(async (cmd, options) => {
@@ -74,12 +74,12 @@ program.command("neutral").description("Set devices to neutral white light").act
   }, []));
 
   if (responses.every(response => response.status === 200)) {
-    console.log("Done with no errors");
+    console.log(_chalk.default.green("Done with no errors"));
     process.exit(1);
   }
 
   const errorMessages = responses.map(response => response.errorMessage).filter(Boolean);
-  console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+  console.log(_chalk.default.red(`Done with errors:\n${errorMessages.join("\n")}`));
   process.exit(2);
 });
 program.command("warm").description("Set devices to warm white light").action(async (cmd, options) => {
@@ -90,12 +90,12 @@ program.command("warm").description("Set devices to warm white light").action(as
   }, []));
 
   if (responses.every(response => response.status === 200)) {
-    console.log("Done with no errors");
+    console.log(_chalk.default.green("Done with no errors"));
     process.exit(1);
   }
 
   const errorMessages = responses.map(response => response.errorMessage).filter(Boolean);
-  console.log(`Done with errors:\n${errorMessages.join("\n")}`);
+  console.log(_chalk.default.red(`Done with errors:\n${errorMessages.join("\n")}`));
   process.exit(2);
 });
 program.parseAsync(process.argv);
