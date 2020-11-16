@@ -7,8 +7,10 @@ import {
   IYeelightMethodResponse,
   YeelightMethodStatusEnum,
 } from "yeelight-service/lib/yeelight.interface";
-const yeelightService = new YeelightService();
 import { Command } from "commander";
+import chalk from "chalk";
+
+const yeelightService = new YeelightService();
 const program = new Command();
 
 /*
@@ -87,7 +89,7 @@ program
     );
 
     if (responses.every((response) => response.status === 200)) {
-      console.log("Done with no errors");
+      console.log(chalk.green("Done with no errors"));
       process.exit(1);
     }
 
