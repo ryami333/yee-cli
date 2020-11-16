@@ -19,6 +19,7 @@
     "start": "node bin/index.js"
   },
   "dependencies": {
+    "chalk": "^4.1.0",
     "commander": "^6.2.0",
     "yeelight-service": "^1.0.2"
   }
