@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { YeelightService } from "yeelight-service";
 import {
   IYeelightDevice,
