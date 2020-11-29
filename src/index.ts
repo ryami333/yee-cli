@@ -5,6 +5,7 @@ import {
 } from "yeelight-service/lib/yeelight.interface";
 import { Command } from "commander";
 import chalk from "chalk";
+import { filter, first } from "rxjs/operators";
 
 const yeelightService = new YeelightService();
 const program = new Command();
@@ -14,16 +15,11 @@ const program = new Command();
  */
 
 async function getDevices(): Promise<IYeelightDevice[]> {
-  let devices: IYeelightDevice[] = [];
-
-  const subscriber = yeelightService.devices.subscribe((foundDevices) => {
-    devices = foundDevices;
-  });
-
-  /* Typically takes <20ms, accounting for a full factor. */
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  subscriber.unsubscribe();
+  const devices = await yeelightService.devices
+    .asObservable()
+    .pipe(filter((devices) => devices.length === 4))
+    .pipe(first())
+    .toPromise();
 
   return devices;
 }

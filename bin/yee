@@ -7608,6 +7608,58 @@ function concatAll() {
 
 /***/ }),
 
+/***/ 86:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "d": () => /* binding */ defaultIfEmpty
+/* harmony export */ });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(655);
+/* harmony import */ var _Subscriber__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(979);
+/** PURE_IMPORTS_START tslib,_Subscriber PURE_IMPORTS_END */
+;
+
+function defaultIfEmpty(defaultValue) {
+    if (defaultValue === void 0) {
+        defaultValue = null;
+    }
+    return function (source) { return source.lift(new DefaultIfEmptyOperator(defaultValue)); };
+}
+var DefaultIfEmptyOperator = /*@__PURE__*/ (function () {
+    function DefaultIfEmptyOperator(defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+    DefaultIfEmptyOperator.prototype.call = function (subscriber, source) {
+        return source.subscribe(new DefaultIfEmptySubscriber(subscriber, this.defaultValue));
+    };
+    return DefaultIfEmptyOperator;
+}());
+var DefaultIfEmptySubscriber = /*@__PURE__*/ (function (_super) {
+    tslib__WEBPACK_IMPORTED_MODULE_0__/* .__extends */ .ZT(DefaultIfEmptySubscriber, _super);
+    function DefaultIfEmptySubscriber(destination, defaultValue) {
+        var _this = _super.call(this, destination) || this;
+        _this.defaultValue = defaultValue;
+        _this.isEmpty = true;
+        return _this;
+    }
+    DefaultIfEmptySubscriber.prototype._next = function (value) {
+        this.isEmpty = false;
+        this.destination.next(value);
+    };
+    DefaultIfEmptySubscriber.prototype._complete = function () {
+        if (this.isEmpty) {
+            this.destination.next(this.defaultValue);
+        }
+        this.destination.complete();
+    };
+    return DefaultIfEmptySubscriber;
+}(_Subscriber__WEBPACK_IMPORTED_MODULE_1__/* .Subscriber */ .L));
+//# sourceMappingURL=defaultIfEmpty.js.map
+
+
+/***/ }),
+
 /***/ 6008:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -7660,6 +7712,35 @@ var FilterSubscriber = /*@__PURE__*/ (function (_super) {
     return FilterSubscriber;
 }(_Subscriber__WEBPACK_IMPORTED_MODULE_1__/* .Subscriber */ .L));
 //# sourceMappingURL=filter.js.map
+
+
+/***/ }),
+
+/***/ 971:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "P": () => /* binding */ first
+/* harmony export */ });
+/* harmony import */ var _util_EmptyError__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(6929);
+/* harmony import */ var _filter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6008);
+/* harmony import */ var _take__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(15);
+/* harmony import */ var _defaultIfEmpty__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(86);
+/* harmony import */ var _throwIfEmpty__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(266);
+/* harmony import */ var _util_identity__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3608);
+/** PURE_IMPORTS_START _util_EmptyError,_filter,_take,_defaultIfEmpty,_throwIfEmpty,_util_identity PURE_IMPORTS_END */
+;
+
+
+
+
+
+function first(predicate, defaultValue) {
+    var hasDefaultValue = arguments.length >= 2;
+    return function (source) { return source.pipe(predicate ? (0,_filter__WEBPACK_IMPORTED_MODULE_0__/* .filter */ .h)(function (v, i) { return predicate(v, i, source); }) : _util_identity__WEBPACK_IMPORTED_MODULE_1__/* .identity */ .y, (0,_take__WEBPACK_IMPORTED_MODULE_2__/* .take */ .q)(1), hasDefaultValue ? (0,_defaultIfEmpty__WEBPACK_IMPORTED_MODULE_3__/* .defaultIfEmpty */ .d)(defaultValue) : (0,_throwIfEmpty__WEBPACK_IMPORTED_MODULE_4__/* .throwIfEmpty */ .T)(function () { return new _util_EmptyError__WEBPACK_IMPORTED_MODULE_5__/* .EmptyError */ .K(); })); };
+}
+//# sourceMappingURL=first.js.map
 
 
 /***/ }),
@@ -8215,6 +8296,138 @@ var RefCountSubscriber = /*@__PURE__*/ (function (_super) {
     return RefCountSubscriber;
 }(_Subscriber__WEBPACK_IMPORTED_MODULE_1__/* .Subscriber */ .L));
 //# sourceMappingURL=refCount.js.map
+
+
+/***/ }),
+
+/***/ 15:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "q": () => /* binding */ take
+/* harmony export */ });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(655);
+/* harmony import */ var _Subscriber__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(979);
+/* harmony import */ var _util_ArgumentOutOfRangeError__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6565);
+/* harmony import */ var _observable_empty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5631);
+/** PURE_IMPORTS_START tslib,_Subscriber,_util_ArgumentOutOfRangeError,_observable_empty PURE_IMPORTS_END */
+;
+
+
+
+function take(count) {
+    return function (source) {
+        if (count === 0) {
+            return (0,_observable_empty__WEBPACK_IMPORTED_MODULE_0__/* .empty */ .c)();
+        }
+        else {
+            return source.lift(new TakeOperator(count));
+        }
+    };
+}
+var TakeOperator = /*@__PURE__*/ (function () {
+    function TakeOperator(total) {
+        this.total = total;
+        if (this.total < 0) {
+            throw new _util_ArgumentOutOfRangeError__WEBPACK_IMPORTED_MODULE_1__/* .ArgumentOutOfRangeError */ .W;
+        }
+    }
+    TakeOperator.prototype.call = function (subscriber, source) {
+        return source.subscribe(new TakeSubscriber(subscriber, this.total));
+    };
+    return TakeOperator;
+}());
+var TakeSubscriber = /*@__PURE__*/ (function (_super) {
+    tslib__WEBPACK_IMPORTED_MODULE_2__/* .__extends */ .ZT(TakeSubscriber, _super);
+    function TakeSubscriber(destination, total) {
+        var _this = _super.call(this, destination) || this;
+        _this.total = total;
+        _this.count = 0;
+        return _this;
+    }
+    TakeSubscriber.prototype._next = function (value) {
+        var total = this.total;
+        var count = ++this.count;
+        if (count <= total) {
+            this.destination.next(value);
+            if (count === total) {
+                this.destination.complete();
+                this.unsubscribe();
+            }
+        }
+    };
+    return TakeSubscriber;
+}(_Subscriber__WEBPACK_IMPORTED_MODULE_3__/* .Subscriber */ .L));
+//# sourceMappingURL=take.js.map
+
+
+/***/ }),
+
+/***/ 266:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "T": () => /* binding */ throwIfEmpty
+/* harmony export */ });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(655);
+/* harmony import */ var _util_EmptyError__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6929);
+/* harmony import */ var _Subscriber__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(979);
+/** PURE_IMPORTS_START tslib,_util_EmptyError,_Subscriber PURE_IMPORTS_END */
+;
+
+
+function throwIfEmpty(errorFactory) {
+    if (errorFactory === void 0) {
+        errorFactory = defaultErrorFactory;
+    }
+    return function (source) {
+        return source.lift(new ThrowIfEmptyOperator(errorFactory));
+    };
+}
+var ThrowIfEmptyOperator = /*@__PURE__*/ (function () {
+    function ThrowIfEmptyOperator(errorFactory) {
+        this.errorFactory = errorFactory;
+    }
+    ThrowIfEmptyOperator.prototype.call = function (subscriber, source) {
+        return source.subscribe(new ThrowIfEmptySubscriber(subscriber, this.errorFactory));
+    };
+    return ThrowIfEmptyOperator;
+}());
+var ThrowIfEmptySubscriber = /*@__PURE__*/ (function (_super) {
+    tslib__WEBPACK_IMPORTED_MODULE_0__/* .__extends */ .ZT(ThrowIfEmptySubscriber, _super);
+    function ThrowIfEmptySubscriber(destination, errorFactory) {
+        var _this = _super.call(this, destination) || this;
+        _this.errorFactory = errorFactory;
+        _this.hasValue = false;
+        return _this;
+    }
+    ThrowIfEmptySubscriber.prototype._next = function (value) {
+        this.hasValue = true;
+        this.destination.next(value);
+    };
+    ThrowIfEmptySubscriber.prototype._complete = function () {
+        if (!this.hasValue) {
+            var err = void 0;
+            try {
+                err = this.errorFactory();
+            }
+            catch (e) {
+                err = e;
+            }
+            this.destination.error(err);
+        }
+        else {
+            return this.destination.complete();
+        }
+    };
+    return ThrowIfEmptySubscriber;
+}(_Subscriber__WEBPACK_IMPORTED_MODULE_1__/* .Subscriber */ .L));
+function defaultErrorFactory() {
+    return new _util_EmptyError__WEBPACK_IMPORTED_MODULE_2__/* .EmptyError */ .K();
+}
+//# sourceMappingURL=throwIfEmpty.js.map
 
 
 /***/ }),
@@ -9499,7 +9712,7 @@ function subscribeToResult(outerSubscriber, result, outerValue, outerIndex, inne
 
 /***/ }),
 
-/***/ 1717:
+/***/ 703:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -9525,7 +9738,7 @@ __webpack_require__.d(__webpack_exports__, {
   "count": () => /* reexport */ count,
   "debounce": () => /* reexport */ debounce,
   "debounceTime": () => /* reexport */ debounceTime,
-  "defaultIfEmpty": () => /* reexport */ defaultIfEmpty,
+  "defaultIfEmpty": () => /* reexport */ defaultIfEmpty/* defaultIfEmpty */.d,
   "delay": () => /* reexport */ delay,
   "delayWhen": () => /* reexport */ delayWhen,
   "dematerialize": () => /* reexport */ dematerialize,
@@ -9542,7 +9755,7 @@ __webpack_require__.d(__webpack_exports__, {
   "finalize": () => /* reexport */ finalize,
   "find": () => /* reexport */ find,
   "findIndex": () => /* reexport */ findIndex,
-  "first": () => /* reexport */ first,
+  "first": () => /* reexport */ first/* first */.P,
   "flatMap": () => /* reexport */ mergeMap/* flatMap */.VS,
   "groupBy": () => /* reexport */ groupBy/* groupBy */.v,
   "ignoreElements": () => /* reexport */ ignoreElements,
@@ -9591,14 +9804,14 @@ __webpack_require__.d(__webpack_exports__, {
   "switchAll": () => /* reexport */ switchAll,
   "switchMap": () => /* reexport */ switchMap,
   "switchMapTo": () => /* reexport */ switchMapTo,
-  "take": () => /* reexport */ take,
+  "take": () => /* reexport */ take/* take */.q,
   "takeLast": () => /* reexport */ takeLast,
   "takeUntil": () => /* reexport */ takeUntil,
   "takeWhile": () => /* reexport */ takeWhile,
   "tap": () => /* reexport */ tap,
   "throttle": () => /* reexport */ throttle,
   "throttleTime": () => /* reexport */ throttleTime,
-  "throwIfEmpty": () => /* reexport */ throwIfEmpty,
+  "throwIfEmpty": () => /* reexport */ throwIfEmpty/* throwIfEmpty */.T,
   "timeInterval": () => /* reexport */ timeInterval,
   "timeout": () => /* reexport */ timeout,
   "timeoutWith": () => /* reexport */ timeoutWith,
@@ -10505,47 +10718,8 @@ function dispatchNext(subscriber) {
 }
 //# sourceMappingURL=debounceTime.js.map
 
-// CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/defaultIfEmpty.js
-/** PURE_IMPORTS_START tslib,_Subscriber PURE_IMPORTS_END */
-;
-
-function defaultIfEmpty(defaultValue) {
-    if (defaultValue === void 0) {
-        defaultValue = null;
-    }
-    return function (source) { return source.lift(new DefaultIfEmptyOperator(defaultValue)); };
-}
-var DefaultIfEmptyOperator = /*@__PURE__*/ (function () {
-    function DefaultIfEmptyOperator(defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-    DefaultIfEmptyOperator.prototype.call = function (subscriber, source) {
-        return source.subscribe(new DefaultIfEmptySubscriber(subscriber, this.defaultValue));
-    };
-    return DefaultIfEmptyOperator;
-}());
-var DefaultIfEmptySubscriber = /*@__PURE__*/ (function (_super) {
-    tslib_es6/* __extends */.ZT(DefaultIfEmptySubscriber, _super);
-    function DefaultIfEmptySubscriber(destination, defaultValue) {
-        var _this = _super.call(this, destination) || this;
-        _this.defaultValue = defaultValue;
-        _this.isEmpty = true;
-        return _this;
-    }
-    DefaultIfEmptySubscriber.prototype._next = function (value) {
-        this.isEmpty = false;
-        this.destination.next(value);
-    };
-    DefaultIfEmptySubscriber.prototype._complete = function () {
-        if (this.isEmpty) {
-            this.destination.next(this.defaultValue);
-        }
-        this.destination.complete();
-    };
-    return DefaultIfEmptySubscriber;
-}(Subscriber/* Subscriber */.L));
-//# sourceMappingURL=defaultIfEmpty.js.map
-
+// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/operators/defaultIfEmpty.js
+var defaultIfEmpty = __webpack_require__(86);
 // CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/util/isDate.js
 /** PURE_IMPORTS_START  PURE_IMPORTS_END */
 function isDate(value) {
@@ -10955,117 +11129,10 @@ function distinctUntilKeyChanged(key, compare) {
 var ArgumentOutOfRangeError = __webpack_require__(6565);
 // EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/operators/filter.js
 var filter = __webpack_require__(6008);
-// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/util/EmptyError.js
-var EmptyError = __webpack_require__(6929);
-// CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/throwIfEmpty.js
-/** PURE_IMPORTS_START tslib,_util_EmptyError,_Subscriber PURE_IMPORTS_END */
-;
-
-
-function throwIfEmpty(errorFactory) {
-    if (errorFactory === void 0) {
-        errorFactory = defaultErrorFactory;
-    }
-    return function (source) {
-        return source.lift(new ThrowIfEmptyOperator(errorFactory));
-    };
-}
-var ThrowIfEmptyOperator = /*@__PURE__*/ (function () {
-    function ThrowIfEmptyOperator(errorFactory) {
-        this.errorFactory = errorFactory;
-    }
-    ThrowIfEmptyOperator.prototype.call = function (subscriber, source) {
-        return source.subscribe(new ThrowIfEmptySubscriber(subscriber, this.errorFactory));
-    };
-    return ThrowIfEmptyOperator;
-}());
-var ThrowIfEmptySubscriber = /*@__PURE__*/ (function (_super) {
-    tslib_es6/* __extends */.ZT(ThrowIfEmptySubscriber, _super);
-    function ThrowIfEmptySubscriber(destination, errorFactory) {
-        var _this = _super.call(this, destination) || this;
-        _this.errorFactory = errorFactory;
-        _this.hasValue = false;
-        return _this;
-    }
-    ThrowIfEmptySubscriber.prototype._next = function (value) {
-        this.hasValue = true;
-        this.destination.next(value);
-    };
-    ThrowIfEmptySubscriber.prototype._complete = function () {
-        if (!this.hasValue) {
-            var err = void 0;
-            try {
-                err = this.errorFactory();
-            }
-            catch (e) {
-                err = e;
-            }
-            this.destination.error(err);
-        }
-        else {
-            return this.destination.complete();
-        }
-    };
-    return ThrowIfEmptySubscriber;
-}(Subscriber/* Subscriber */.L));
-function defaultErrorFactory() {
-    return new EmptyError/* EmptyError */.K();
-}
-//# sourceMappingURL=throwIfEmpty.js.map
-
-// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/observable/empty.js
-var empty = __webpack_require__(5631);
-// CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/take.js
-/** PURE_IMPORTS_START tslib,_Subscriber,_util_ArgumentOutOfRangeError,_observable_empty PURE_IMPORTS_END */
-;
-
-
-
-function take(count) {
-    return function (source) {
-        if (count === 0) {
-            return (0,empty/* empty */.c)();
-        }
-        else {
-            return source.lift(new TakeOperator(count));
-        }
-    };
-}
-var TakeOperator = /*@__PURE__*/ (function () {
-    function TakeOperator(total) {
-        this.total = total;
-        if (this.total < 0) {
-            throw new ArgumentOutOfRangeError/* ArgumentOutOfRangeError */.W;
-        }
-    }
-    TakeOperator.prototype.call = function (subscriber, source) {
-        return source.subscribe(new TakeSubscriber(subscriber, this.total));
-    };
-    return TakeOperator;
-}());
-var TakeSubscriber = /*@__PURE__*/ (function (_super) {
-    tslib_es6/* __extends */.ZT(TakeSubscriber, _super);
-    function TakeSubscriber(destination, total) {
-        var _this = _super.call(this, destination) || this;
-        _this.total = total;
-        _this.count = 0;
-        return _this;
-    }
-    TakeSubscriber.prototype._next = function (value) {
-        var total = this.total;
-        var count = ++this.count;
-        if (count <= total) {
-            this.destination.next(value);
-            if (count === total) {
-                this.destination.complete();
-                this.unsubscribe();
-            }
-        }
-    };
-    return TakeSubscriber;
-}(Subscriber/* Subscriber */.L));
-//# sourceMappingURL=take.js.map
-
+// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/operators/throwIfEmpty.js
+var throwIfEmpty = __webpack_require__(266);
+// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/operators/take.js
+var take = __webpack_require__(15);
 // CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/elementAt.js
 /** PURE_IMPORTS_START _util_ArgumentOutOfRangeError,_filter,_throwIfEmpty,_defaultIfEmpty,_take PURE_IMPORTS_END */
 ;
@@ -11079,9 +11146,9 @@ function elementAt(index, defaultValue) {
     }
     var hasDefaultValue = arguments.length >= 2;
     return function (source) {
-        return source.pipe((0,filter/* filter */.h)(function (v, i) { return i === index; }), take(1), hasDefaultValue
-            ? defaultIfEmpty(defaultValue)
-            : throwIfEmpty(function () { return new ArgumentOutOfRangeError/* ArgumentOutOfRangeError */.W(); }));
+        return source.pipe((0,filter/* filter */.h)(function (v, i) { return i === index; }), (0,take/* take */.q)(1), hasDefaultValue
+            ? (0,defaultIfEmpty/* defaultIfEmpty */.d)(defaultValue)
+            : (0,throwIfEmpty/* throwIfEmpty */.T)(function () { return new ArgumentOutOfRangeError/* ArgumentOutOfRangeError */.W(); }));
     };
 }
 //# sourceMappingURL=elementAt.js.map
@@ -11482,22 +11549,8 @@ function findIndex(predicate, thisArg) {
 }
 //# sourceMappingURL=findIndex.js.map
 
-// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/util/identity.js
-var identity = __webpack_require__(3608);
-// CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/first.js
-/** PURE_IMPORTS_START _util_EmptyError,_filter,_take,_defaultIfEmpty,_throwIfEmpty,_util_identity PURE_IMPORTS_END */
-;
-
-
-
-
-
-function first(predicate, defaultValue) {
-    var hasDefaultValue = arguments.length >= 2;
-    return function (source) { return source.pipe(predicate ? (0,filter/* filter */.h)(function (v, i) { return predicate(v, i, source); }) : identity/* identity */.y, take(1), hasDefaultValue ? defaultIfEmpty(defaultValue) : throwIfEmpty(function () { return new EmptyError/* EmptyError */.K(); })); };
-}
-//# sourceMappingURL=first.js.map
-
+// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/operators/first.js
+var first = __webpack_require__(971);
 // EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/operators/groupBy.js
 var groupBy = __webpack_require__(1120);
 // CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/ignoreElements.js
@@ -11563,6 +11616,10 @@ var IsEmptySubscriber = /*@__PURE__*/ (function (_super) {
 }(Subscriber/* Subscriber */.L));
 //# sourceMappingURL=isEmpty.js.map
 
+// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/util/EmptyError.js
+var EmptyError = __webpack_require__(6929);
+// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/observable/empty.js
+var empty = __webpack_require__(5631);
 // CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/takeLast.js
 /** PURE_IMPORTS_START tslib,_Subscriber,_util_ArgumentOutOfRangeError,_observable_empty PURE_IMPORTS_END */
 ;
@@ -11629,6 +11686,8 @@ var TakeLastSubscriber = /*@__PURE__*/ (function (_super) {
 }(Subscriber/* Subscriber */.L));
 //# sourceMappingURL=takeLast.js.map
 
+// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/util/identity.js
+var identity = __webpack_require__(3608);
 // CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/last.js
 /** PURE_IMPORTS_START _util_EmptyError,_filter,_takeLast,_throwIfEmpty,_defaultIfEmpty,_util_identity PURE_IMPORTS_END */
 ;
@@ -11639,7 +11698,7 @@ var TakeLastSubscriber = /*@__PURE__*/ (function (_super) {
 
 function last(predicate, defaultValue) {
     var hasDefaultValue = arguments.length >= 2;
-    return function (source) { return source.pipe(predicate ? (0,filter/* filter */.h)(function (v, i) { return predicate(v, i, source); }) : identity/* identity */.y, takeLast(1), hasDefaultValue ? defaultIfEmpty(defaultValue) : throwIfEmpty(function () { return new EmptyError/* EmptyError */.K(); })); };
+    return function (source) { return source.pipe(predicate ? (0,filter/* filter */.h)(function (v, i) { return predicate(v, i, source); }) : identity/* identity */.y, takeLast(1), hasDefaultValue ? (0,defaultIfEmpty/* defaultIfEmpty */.d)(defaultValue) : (0,throwIfEmpty/* throwIfEmpty */.T)(function () { return new EmptyError/* EmptyError */.K(); })); };
 }
 //# sourceMappingURL=last.js.map
 
@@ -11797,7 +11856,7 @@ var pipe = __webpack_require__(2561);
 function reduce(accumulator, seed) {
     if (arguments.length >= 2) {
         return function reduceOperatorFunctionWithSeed(source) {
-            return (0,pipe/* pipe */.z)(scan(accumulator, seed), takeLast(1), defaultIfEmpty(seed))(source);
+            return (0,pipe/* pipe */.z)(scan(accumulator, seed), takeLast(1), (0,defaultIfEmpty/* defaultIfEmpty */.d)(seed))(source);
         };
     }
     return function reduceOperatorFunction(source) {
@@ -15415,7 +15474,7 @@ var ip = __webpack_require__(413);
 var dgram = __webpack_require__(6200);
 var yeelight_interface_1 = __webpack_require__(5118);
 var rxjs_1 = __webpack_require__(4143);
-var operators_1 = __webpack_require__(1717);
+var operators_1 = __webpack_require__(703);
 var device_class_1 = __webpack_require__(6135);
 var YeelightService = /** @class */ (function () {
     function YeelightService() {
@@ -15770,7 +15829,10 @@ module.exports = require("tty");;
 /* harmony import */ var commander__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(commander__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var chalk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4061);
 /* harmony import */ var chalk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(chalk__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6008);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(971);
 ;
+
 
 
 const yeelightService = new yeelight_service__WEBPACK_IMPORTED_MODULE_0__.YeelightService();
@@ -15780,14 +15842,7 @@ const program = new commander__WEBPACK_IMPORTED_MODULE_1__.Command();
  */
 
 async function getDevices() {
-  let devices = [];
-  const subscriber = yeelightService.devices.subscribe(foundDevices => {
-    devices = foundDevices;
-  });
-  /* Typically takes <20ms, accounting for a full factor. */
-
-  await new Promise(resolve => setTimeout(resolve, 500));
-  subscriber.unsubscribe();
+  const devices = await yeelightService.devices.asObservable().pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__/* .filter */ .h)(devices => devices.length === 4)).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_4__/* .first */ .P)()).toPromise();
   return devices;
 }
 

@@ -27,6 +27,7 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "commander": "^6.2.0",
+    "rxjs": "^6.6.3",
     "yeelight-service": "^1.0.2"
   }
 }
