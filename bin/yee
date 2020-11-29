@@ -8300,6 +8300,61 @@ var RefCountSubscriber = /*@__PURE__*/ (function (_super) {
 
 /***/ }),
 
+/***/ 876:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "X": () => /* binding */ retry
+/* harmony export */ });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(655);
+/* harmony import */ var _Subscriber__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(979);
+/** PURE_IMPORTS_START tslib,_Subscriber PURE_IMPORTS_END */
+;
+
+function retry(count) {
+    if (count === void 0) {
+        count = -1;
+    }
+    return function (source) { return source.lift(new RetryOperator(count, source)); };
+}
+var RetryOperator = /*@__PURE__*/ (function () {
+    function RetryOperator(count, source) {
+        this.count = count;
+        this.source = source;
+    }
+    RetryOperator.prototype.call = function (subscriber, source) {
+        return source.subscribe(new RetrySubscriber(subscriber, this.count, this.source));
+    };
+    return RetryOperator;
+}());
+var RetrySubscriber = /*@__PURE__*/ (function (_super) {
+    tslib__WEBPACK_IMPORTED_MODULE_0__/* .__extends */ .ZT(RetrySubscriber, _super);
+    function RetrySubscriber(destination, count, source) {
+        var _this = _super.call(this, destination) || this;
+        _this.count = count;
+        _this.source = source;
+        return _this;
+    }
+    RetrySubscriber.prototype.error = function (err) {
+        if (!this.isStopped) {
+            var _a = this, source = _a.source, count = _a.count;
+            if (count === 0) {
+                return _super.prototype.error.call(this, err);
+            }
+            else if (count > -1) {
+                this.count = count - 1;
+            }
+            source.subscribe(this._unsubscribeAndRecycle());
+        }
+    };
+    return RetrySubscriber;
+}(_Subscriber__WEBPACK_IMPORTED_MODULE_1__/* .Subscriber */ .L));
+//# sourceMappingURL=retry.js.map
+
+
+/***/ }),
+
 /***/ 15:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -8428,6 +8483,114 @@ function defaultErrorFactory() {
     return new _util_EmptyError__WEBPACK_IMPORTED_MODULE_2__/* .EmptyError */ .K();
 }
 //# sourceMappingURL=throwIfEmpty.js.map
+
+
+/***/ }),
+
+/***/ 395:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "V": () => /* binding */ timeout
+/* harmony export */ });
+/* harmony import */ var _scheduler_async__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(964);
+/* harmony import */ var _util_TimeoutError__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(1462);
+/* harmony import */ var _timeoutWith__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(909);
+/* harmony import */ var _observable_throwError__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4944);
+/** PURE_IMPORTS_START _scheduler_async,_util_TimeoutError,_timeoutWith,_observable_throwError PURE_IMPORTS_END */
+;
+
+
+
+function timeout(due, scheduler) {
+    if (scheduler === void 0) {
+        scheduler = _scheduler_async__WEBPACK_IMPORTED_MODULE_0__/* .async */ .P;
+    }
+    return (0,_timeoutWith__WEBPACK_IMPORTED_MODULE_1__/* .timeoutWith */ .L)(due, (0,_observable_throwError__WEBPACK_IMPORTED_MODULE_2__/* .throwError */ ._)(new _util_TimeoutError__WEBPACK_IMPORTED_MODULE_3__/* .TimeoutError */ .W()), scheduler);
+}
+//# sourceMappingURL=timeout.js.map
+
+
+/***/ }),
+
+/***/ 909:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "L": () => /* binding */ timeoutWith
+/* harmony export */ });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(655);
+/* harmony import */ var _scheduler_async__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(964);
+/* harmony import */ var _util_isDate__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(914);
+/* harmony import */ var _innerSubscribe__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7604);
+/** PURE_IMPORTS_START tslib,_scheduler_async,_util_isDate,_innerSubscribe PURE_IMPORTS_END */
+;
+
+
+
+function timeoutWith(due, withObservable, scheduler) {
+    if (scheduler === void 0) {
+        scheduler = _scheduler_async__WEBPACK_IMPORTED_MODULE_0__/* .async */ .P;
+    }
+    return function (source) {
+        var absoluteTimeout = (0,_util_isDate__WEBPACK_IMPORTED_MODULE_1__/* .isDate */ .J)(due);
+        var waitFor = absoluteTimeout ? (+due - scheduler.now()) : Math.abs(due);
+        return source.lift(new TimeoutWithOperator(waitFor, absoluteTimeout, withObservable, scheduler));
+    };
+}
+var TimeoutWithOperator = /*@__PURE__*/ (function () {
+    function TimeoutWithOperator(waitFor, absoluteTimeout, withObservable, scheduler) {
+        this.waitFor = waitFor;
+        this.absoluteTimeout = absoluteTimeout;
+        this.withObservable = withObservable;
+        this.scheduler = scheduler;
+    }
+    TimeoutWithOperator.prototype.call = function (subscriber, source) {
+        return source.subscribe(new TimeoutWithSubscriber(subscriber, this.absoluteTimeout, this.waitFor, this.withObservable, this.scheduler));
+    };
+    return TimeoutWithOperator;
+}());
+var TimeoutWithSubscriber = /*@__PURE__*/ (function (_super) {
+    tslib__WEBPACK_IMPORTED_MODULE_2__/* .__extends */ .ZT(TimeoutWithSubscriber, _super);
+    function TimeoutWithSubscriber(destination, absoluteTimeout, waitFor, withObservable, scheduler) {
+        var _this = _super.call(this, destination) || this;
+        _this.absoluteTimeout = absoluteTimeout;
+        _this.waitFor = waitFor;
+        _this.withObservable = withObservable;
+        _this.scheduler = scheduler;
+        _this.scheduleTimeout();
+        return _this;
+    }
+    TimeoutWithSubscriber.dispatchTimeout = function (subscriber) {
+        var withObservable = subscriber.withObservable;
+        subscriber._unsubscribeAndRecycle();
+        subscriber.add((0,_innerSubscribe__WEBPACK_IMPORTED_MODULE_3__/* .innerSubscribe */ .ft)(withObservable, new _innerSubscribe__WEBPACK_IMPORTED_MODULE_3__/* .SimpleInnerSubscriber */ .IY(subscriber)));
+    };
+    TimeoutWithSubscriber.prototype.scheduleTimeout = function () {
+        var action = this.action;
+        if (action) {
+            this.action = action.schedule(this, this.waitFor);
+        }
+        else {
+            this.add(this.action = this.scheduler.schedule(TimeoutWithSubscriber.dispatchTimeout, this.waitFor, this));
+        }
+    };
+    TimeoutWithSubscriber.prototype._next = function (value) {
+        if (!this.absoluteTimeout) {
+            this.scheduleTimeout();
+        }
+        _super.prototype._next.call(this, value);
+    };
+    TimeoutWithSubscriber.prototype._unsubscribe = function () {
+        this.action = undefined;
+        this.scheduler = null;
+        this.withObservable = null;
+    };
+    return TimeoutWithSubscriber;
+}(_innerSubscribe__WEBPACK_IMPORTED_MODULE_3__/* .SimpleOuterSubscriber */ .Ds));
+//# sourceMappingURL=timeoutWith.js.map
 
 
 /***/ }),
@@ -9341,6 +9504,22 @@ var isArrayLike = (function (x) { return x && typeof x.length === 'number' && ty
 
 /***/ }),
 
+/***/ 914:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "J": () => /* binding */ isDate
+/* harmony export */ });
+/** PURE_IMPORTS_START  PURE_IMPORTS_END */
+function isDate(value) {
+    return value instanceof Date && !isNaN(+value);
+}
+//# sourceMappingURL=isDate.js.map
+
+
+/***/ }),
+
 /***/ 4156:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -9712,7 +9891,7 @@ function subscribeToResult(outerSubscriber, result, outerValue, outerIndex, inne
 
 /***/ }),
 
-/***/ 703:
+/***/ 891:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -9786,7 +9965,7 @@ __webpack_require__.d(__webpack_exports__, {
   "refCount": () => /* reexport */ refCount/* refCount */.x,
   "repeat": () => /* reexport */ repeat,
   "repeatWhen": () => /* reexport */ repeatWhen,
-  "retry": () => /* reexport */ retry,
+  "retry": () => /* reexport */ retry/* retry */.X,
   "retryWhen": () => /* reexport */ retryWhen,
   "sample": () => /* reexport */ sample,
   "sampleTime": () => /* reexport */ sampleTime,
@@ -9813,8 +9992,8 @@ __webpack_require__.d(__webpack_exports__, {
   "throttleTime": () => /* reexport */ throttleTime,
   "throwIfEmpty": () => /* reexport */ throwIfEmpty/* throwIfEmpty */.T,
   "timeInterval": () => /* reexport */ timeInterval,
-  "timeout": () => /* reexport */ timeout,
-  "timeoutWith": () => /* reexport */ timeoutWith,
+  "timeout": () => /* reexport */ timeout/* timeout */.V,
+  "timeoutWith": () => /* reexport */ timeoutWith/* timeoutWith */.L,
   "timestamp": () => /* reexport */ timestamp,
   "toArray": () => /* reexport */ toArray,
   "window": () => /* reexport */ window_window,
@@ -10720,13 +10899,8 @@ function dispatchNext(subscriber) {
 
 // EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/operators/defaultIfEmpty.js
 var defaultIfEmpty = __webpack_require__(86);
-// CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/util/isDate.js
-/** PURE_IMPORTS_START  PURE_IMPORTS_END */
-function isDate(value) {
-    return value instanceof Date && !isNaN(+value);
-}
-//# sourceMappingURL=isDate.js.map
-
+// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/util/isDate.js
+var isDate = __webpack_require__(914);
 // EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/Notification.js
 var Notification = __webpack_require__(2632);
 // CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/delay.js
@@ -10740,7 +10914,7 @@ function delay(delay, scheduler) {
     if (scheduler === void 0) {
         scheduler = scheduler_async/* async */.P;
     }
-    var absoluteDelay = isDate(delay);
+    var absoluteDelay = (0,isDate/* isDate */.J)(delay);
     var delayFor = absoluteDelay ? (+delay - scheduler.now()) : Math.abs(delay);
     return function (source) { return source.lift(new DelayOperator(delayFor, scheduler)); };
 }
@@ -12437,50 +12611,8 @@ var RepeatWhenSubscriber = /*@__PURE__*/ (function (_super) {
 }(innerSubscribe/* SimpleOuterSubscriber */.Ds));
 //# sourceMappingURL=repeatWhen.js.map
 
-// CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/retry.js
-/** PURE_IMPORTS_START tslib,_Subscriber PURE_IMPORTS_END */
-;
-
-function retry(count) {
-    if (count === void 0) {
-        count = -1;
-    }
-    return function (source) { return source.lift(new RetryOperator(count, source)); };
-}
-var RetryOperator = /*@__PURE__*/ (function () {
-    function RetryOperator(count, source) {
-        this.count = count;
-        this.source = source;
-    }
-    RetryOperator.prototype.call = function (subscriber, source) {
-        return source.subscribe(new RetrySubscriber(subscriber, this.count, this.source));
-    };
-    return RetryOperator;
-}());
-var RetrySubscriber = /*@__PURE__*/ (function (_super) {
-    tslib_es6/* __extends */.ZT(RetrySubscriber, _super);
-    function RetrySubscriber(destination, count, source) {
-        var _this = _super.call(this, destination) || this;
-        _this.count = count;
-        _this.source = source;
-        return _this;
-    }
-    RetrySubscriber.prototype.error = function (err) {
-        if (!this.isStopped) {
-            var _a = this, source = _a.source, count = _a.count;
-            if (count === 0) {
-                return _super.prototype.error.call(this, err);
-            }
-            else if (count > -1) {
-                this.count = count - 1;
-            }
-            source.subscribe(this._unsubscribeAndRecycle());
-        }
-    };
-    return RetrySubscriber;
-}(Subscriber/* Subscriber */.L));
-//# sourceMappingURL=retry.js.map
-
+// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/operators/retry.js
+var retry = __webpack_require__(876);
 // CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/retryWhen.js
 /** PURE_IMPORTS_START tslib,_Subject,_innerSubscribe PURE_IMPORTS_END */
 ;
@@ -13677,92 +13809,10 @@ var TimeInterval = /*@__PURE__*/ (function () {
 
 //# sourceMappingURL=timeInterval.js.map
 
-// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/util/TimeoutError.js
-var TimeoutError = __webpack_require__(1462);
-// CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/timeoutWith.js
-/** PURE_IMPORTS_START tslib,_scheduler_async,_util_isDate,_innerSubscribe PURE_IMPORTS_END */
-;
-
-
-
-function timeoutWith(due, withObservable, scheduler) {
-    if (scheduler === void 0) {
-        scheduler = scheduler_async/* async */.P;
-    }
-    return function (source) {
-        var absoluteTimeout = isDate(due);
-        var waitFor = absoluteTimeout ? (+due - scheduler.now()) : Math.abs(due);
-        return source.lift(new TimeoutWithOperator(waitFor, absoluteTimeout, withObservable, scheduler));
-    };
-}
-var TimeoutWithOperator = /*@__PURE__*/ (function () {
-    function TimeoutWithOperator(waitFor, absoluteTimeout, withObservable, scheduler) {
-        this.waitFor = waitFor;
-        this.absoluteTimeout = absoluteTimeout;
-        this.withObservable = withObservable;
-        this.scheduler = scheduler;
-    }
-    TimeoutWithOperator.prototype.call = function (subscriber, source) {
-        return source.subscribe(new TimeoutWithSubscriber(subscriber, this.absoluteTimeout, this.waitFor, this.withObservable, this.scheduler));
-    };
-    return TimeoutWithOperator;
-}());
-var TimeoutWithSubscriber = /*@__PURE__*/ (function (_super) {
-    tslib_es6/* __extends */.ZT(TimeoutWithSubscriber, _super);
-    function TimeoutWithSubscriber(destination, absoluteTimeout, waitFor, withObservable, scheduler) {
-        var _this = _super.call(this, destination) || this;
-        _this.absoluteTimeout = absoluteTimeout;
-        _this.waitFor = waitFor;
-        _this.withObservable = withObservable;
-        _this.scheduler = scheduler;
-        _this.scheduleTimeout();
-        return _this;
-    }
-    TimeoutWithSubscriber.dispatchTimeout = function (subscriber) {
-        var withObservable = subscriber.withObservable;
-        subscriber._unsubscribeAndRecycle();
-        subscriber.add((0,innerSubscribe/* innerSubscribe */.ft)(withObservable, new innerSubscribe/* SimpleInnerSubscriber */.IY(subscriber)));
-    };
-    TimeoutWithSubscriber.prototype.scheduleTimeout = function () {
-        var action = this.action;
-        if (action) {
-            this.action = action.schedule(this, this.waitFor);
-        }
-        else {
-            this.add(this.action = this.scheduler.schedule(TimeoutWithSubscriber.dispatchTimeout, this.waitFor, this));
-        }
-    };
-    TimeoutWithSubscriber.prototype._next = function (value) {
-        if (!this.absoluteTimeout) {
-            this.scheduleTimeout();
-        }
-        _super.prototype._next.call(this, value);
-    };
-    TimeoutWithSubscriber.prototype._unsubscribe = function () {
-        this.action = undefined;
-        this.scheduler = null;
-        this.withObservable = null;
-    };
-    return TimeoutWithSubscriber;
-}(innerSubscribe/* SimpleOuterSubscriber */.Ds));
-//# sourceMappingURL=timeoutWith.js.map
-
-// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/observable/throwError.js
-var throwError = __webpack_require__(4944);
-// CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/timeout.js
-/** PURE_IMPORTS_START _scheduler_async,_util_TimeoutError,_timeoutWith,_observable_throwError PURE_IMPORTS_END */
-;
-
-
-
-function timeout(due, scheduler) {
-    if (scheduler === void 0) {
-        scheduler = scheduler_async/* async */.P;
-    }
-    return timeoutWith(due, (0,throwError/* throwError */._)(new TimeoutError/* TimeoutError */.W()), scheduler);
-}
-//# sourceMappingURL=timeout.js.map
-
+// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/operators/timeout.js
+var timeout = __webpack_require__(395);
+// EXTERNAL MODULE: ./node_modules/rxjs/_esm5/internal/operators/timeoutWith.js
+var timeoutWith = __webpack_require__(909);
 // CONCATENATED MODULE: ./node_modules/rxjs/_esm5/internal/operators/timestamp.js
 /** PURE_IMPORTS_START _scheduler_async,_map PURE_IMPORTS_END */
 ;
@@ -15474,7 +15524,7 @@ var ip = __webpack_require__(413);
 var dgram = __webpack_require__(6200);
 var yeelight_interface_1 = __webpack_require__(5118);
 var rxjs_1 = __webpack_require__(4143);
-var operators_1 = __webpack_require__(703);
+var operators_1 = __webpack_require__(891);
 var device_class_1 = __webpack_require__(6135);
 var YeelightService = /** @class */ (function () {
     function YeelightService() {
@@ -15831,6 +15881,8 @@ module.exports = require("tty");;
 /* harmony import */ var chalk__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(chalk__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6008);
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(971);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(395);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(876);
 ;
 
 
@@ -15842,7 +15894,7 @@ const program = new commander__WEBPACK_IMPORTED_MODULE_1__.Command();
  */
 
 async function getDevices() {
-  const devices = await yeelightService.devices.asObservable().pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__/* .filter */ .h)(devices => devices.length === 4)).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_4__/* .first */ .P)()).toPromise();
+  const devices = await yeelightService.devices.asObservable().pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__/* .filter */ .h)(devices => devices.length === 4)).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_4__/* .first */ .P)()).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_5__/* .timeout */ .V)(500)).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_6__/* .retry */ .X)(5)).toPromise();
   return devices;
 }
 

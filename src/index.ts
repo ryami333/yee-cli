@@ -5,7 +5,7 @@ import {
 } from "yeelight-service/lib/yeelight.interface";
 import { Command } from "commander";
 import chalk from "chalk";
-import { filter, first } from "rxjs/operators";
+import { filter, first, timeout, retry } from "rxjs/operators";
 
 const yeelightService = new YeelightService();
 const program = new Command();
@@ -19,6 +19,8 @@ async function getDevices(): Promise<IYeelightDevice[]> {
     .asObservable()
     .pipe(filter((devices) => devices.length === 4))
     .pipe(first())
+    .pipe(timeout(500))
+    .pipe(retry(5))
     .toPromise();
 
   return devices;
