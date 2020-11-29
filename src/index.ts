@@ -53,7 +53,9 @@ program
     console.log(`Turning off ${devices.length} devices…`);
 
     const responses = await Promise.all(
-      devices.map((device) => device.setPower("off", "smooth"))
+      devices.map((device) =>
+        attemptDeviceCommand(() => device.setPower("off", "smooth"))
+      )
     );
 
     if (responses.every((response) => response.status === 200)) {
@@ -70,6 +72,23 @@ program
     process.exit(2);
   });
 
+async function sleep(duration: number) {
+  return new Promise((resolve) => setTimeout(resolve, duration));
+}
+
+async function attemptDeviceCommand(
+  fn: () => Promise<IYeelightMethodResponse>
+): Promise<IYeelightMethodResponse> {
+  const response = await fn();
+
+  if (response.status === 410) {
+    await sleep(200);
+    return attemptDeviceCommand(fn);
+  }
+
+  return response;
+}
+
 program
   .command("on")
   .description("Turn on all connected devices")
@@ -77,11 +96,11 @@ program
     const devices = await getDevices();
 
     console.log(`Turning on ${devices.length} devices…`);
-
     const responses = await Promise.all(
-      devices.map((device) => device.setPower("on", "smooth"))
+      devices.map((device) =>
+        attemptDeviceCommand(() => device.setPower("on", "smooth"))
+      )
     );
-
     if (responses.every((response) => response.status === 200)) {
       console.log(chalk.green("Done with no errors"));
       process.exit(1);
@@ -105,19 +124,14 @@ program
     console.log(`Updating ${devices.length} devices…`);
 
     const responses = await Promise.all(
-      devices.reduce(
-        (
-          carry: Promise<IYeelightMethodResponse>[],
-          device
-        ): Promise<IYeelightMethodResponse>[] => {
+      devices
+        .map((device): Promise<IYeelightMethodResponse>[] => {
           return [
-            ...carry,
-            device.setColorTemperature(4271),
-            device.setBrightness(100),
+            attemptDeviceCommand(() => device.setColorTemperature(4271)),
+            attemptDeviceCommand(() => device.setBrightness(100)),
           ];
-        },
-        []
-      )
+        })
+        .flat()
     );
 
     if (responses.every((response) => response.status === 200)) {
@@ -149,8 +163,8 @@ program
         ): Promise<IYeelightMethodResponse>[] => {
           return [
             ...carry,
-            device.setRgb("#FF7900"),
-            device.setBrightness(100),
+            attemptDeviceCommand(() => device.setRgb("#FF7900")),
+            attemptDeviceCommand(() => device.setBrightness(100)),
           ];
         },
         []

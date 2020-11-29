@@ -15911,7 +15911,7 @@ program.command("list").description("Show the connected devices").action(async (
 program.command("off").description("Turn off all connected devices").action(async () => {
   const devices = await getDevices();
   console.log(`Turning off ${devices.length} devices…`);
-  const responses = await Promise.all(devices.map(device => device.setPower("off", "smooth")));
+  const responses = await Promise.all(devices.map(device => attemptDeviceCommand(() => device.setPower("off", "smooth"))));
 
   if (responses.every(response => response.status === 200)) {
     console.log(chalk__WEBPACK_IMPORTED_MODULE_2___default().green("Done with no errors"));
@@ -15923,10 +15923,26 @@ program.command("off").description("Turn off all connected devices").action(asyn
   console.log(chalk__WEBPACK_IMPORTED_MODULE_2___default().red(`Done with errors:\n${errorMessages.join("\n")}`));
   process.exit(2);
 });
+
+async function sleep(duration) {
+  return new Promise(resolve => setTimeout(resolve, duration));
+}
+
+async function attemptDeviceCommand(fn) {
+  const response = await fn();
+
+  if (response.status === 410) {
+    await sleep(200);
+    return attemptDeviceCommand(fn);
+  }
+
+  return response;
+}
+
 program.command("on").description("Turn on all connected devices").action(async () => {
   const devices = await getDevices();
   console.log(`Turning on ${devices.length} devices…`);
-  const responses = await Promise.all(devices.map(device => device.setPower("on", "smooth")));
+  const responses = await Promise.all(devices.map(device => attemptDeviceCommand(() => device.setPower("on", "smooth"))));
 
   if (responses.every(response => response.status === 200)) {
     console.log(chalk__WEBPACK_IMPORTED_MODULE_2___default().green("Done with no errors"));
@@ -15940,9 +15956,9 @@ program.command("on").description("Turn on all connected devices").action(async 
 program.command("neutral").description("Set devices to neutral white light").action(async () => {
   const devices = await getDevices();
   console.log(`Updating ${devices.length} devices…`);
-  const responses = await Promise.all(devices.reduce((carry, device) => {
-    return [...carry, device.setColorTemperature(4271), device.setBrightness(100)];
-  }, []));
+  const responses = await Promise.all(devices.map(device => {
+    return [attemptDeviceCommand(() => device.setColorTemperature(4271)), attemptDeviceCommand(() => device.setBrightness(100))];
+  }).flat());
 
   if (responses.every(response => response.status === 200)) {
     console.log(chalk__WEBPACK_IMPORTED_MODULE_2___default().green("Done with no errors"));
@@ -15957,7 +15973,7 @@ program.command("warm").description("Set devices to warm white light").action(as
   const devices = await getDevices();
   console.log(`Updating ${devices.length} devices…`);
   const responses = await Promise.all(devices.reduce((carry, device) => {
-    return [...carry, device.setRgb("#FF7900"), device.setBrightness(100)];
+    return [...carry, attemptDeviceCommand(() => device.setRgb("#FF7900")), attemptDeviceCommand(() => device.setBrightness(100))];
   }, []));
 
   if (responses.every(response => response.status === 200)) {
