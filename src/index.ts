@@ -117,12 +117,16 @@ program
     process.exit(2);
   });
 
+type DeviceOperationCallback = (
+  device: IYeelightDevice
+) => Promise<IYeelightMethodResponse>[];
+
 program
   .command("preset")
   .description("Set devices to the chosen preset")
   .action(async () => {
     const { preset } = await inquirer.prompt<{
-      preset: { rgb: string; brightness: number };
+      preset: DeviceOperationCallback;
     }>([
       {
         name: "preset",
@@ -132,23 +136,38 @@ program
           // https://andi-siess.de/rgb-to-color-temperature/
           {
             name: "6500 - Neutral",
-            value: { rgb: rgb(255, 249, 253), brightness: 100 },
+            value: (device: IYeelightDevice) => [
+              device.setRgb(rgb(255, 249, 253)),
+              device.setBrightness(100),
+            ],
           },
           {
             name: "4200 - Neutral",
-            value: { rgb: rgb(255, 213, 173), brightness: 100 },
+            value: (device: IYeelightDevice) => [
+              device.setRgb(rgb(255, 213, 173)),
+              device.setBrightness(100),
+            ],
           },
           {
             name: "2900 - Warm",
-            value: { rgb: rgb(255, 177, 101), brightness: 100 },
+            value: (device: IYeelightDevice) => [
+              device.setRgb(rgb(255, 177, 101)),
+              device.setBrightness(100),
+            ],
           },
           {
             name: "1700K - Warm",
-            value: { rgb: rgb(255, 121, 0), brightness: 100 },
+            value: (device: IYeelightDevice) => [
+              device.setRgb(rgb(255, 121, 0)),
+              device.setBrightness(100),
+            ],
           },
           {
             name: "1000 – Neutral",
-            value: { rgb: rgb(255, 56, 0), brightness: 100 },
+            value: (device: IYeelightDevice) => [
+              device.setRgb(rgb(255, 56, 0)),
+              device.setBrightness(100),
+            ],
           },
         ],
       },
@@ -160,12 +179,7 @@ program
 
     const responses = await Promise.all(
       devices
-        .map((device): Promise<IYeelightMethodResponse>[] => {
-          return [
-            attemptDeviceCommand(() => device.setRgb(preset.rgb)),
-            attemptDeviceCommand(() => device.setBrightness(preset.brightness)),
-          ];
-        })
+        .map((device): Promise<IYeelightMethodResponse>[] => preset(device))
         .flat()
     );
 
