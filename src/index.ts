@@ -135,23 +135,16 @@ program
         choices: [
           // https://andi-siess.de/rgb-to-color-temperature/
           {
-            name: "6500 - Neutral",
+            name: "4271K - Neutral",
             value: (device: IYeelightDevice) => [
-              device.setRgb(rgb(255, 249, 253)),
+              device.setColorTemperature(4271),
               device.setBrightness(100),
             ],
           },
           {
-            name: "4200 - Neutral",
+            name: "2985K - Warm",
             value: (device: IYeelightDevice) => [
-              device.setRgb(rgb(255, 213, 173)),
-              device.setBrightness(100),
-            ],
-          },
-          {
-            name: "2900 - Warm",
-            value: (device: IYeelightDevice) => [
-              device.setRgb(rgb(255, 177, 101)),
+              device.setColorTemperature(2985),
               device.setBrightness(100),
             ],
           },
@@ -159,13 +152,6 @@ program
             name: "1700K - Warm",
             value: (device: IYeelightDevice) => [
               device.setRgb(rgb(255, 121, 0)),
-              device.setBrightness(100),
-            ],
-          },
-          {
-            name: "1000 – Neutral",
-            value: (device: IYeelightDevice) => [
-              device.setRgb(rgb(255, 56, 0)),
               device.setBrightness(100),
             ],
           },
