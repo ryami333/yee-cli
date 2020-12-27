@@ -84,6 +84,7 @@ async function attemptDeviceCommand(
   const response = await fn();
 
   if (response.status === 410) {
+    console.log(response.status);
     await sleep(200);
     return attemptDeviceCommand(fn);
   }
@@ -137,6 +138,7 @@ program
           {
             name: "4271K - Neutral",
             value: (device: IYeelightDevice) => [
+              device.setPower("on", "smooth"),
               device.setColorTemperature(4271),
               device.setBrightness(100),
             ],
@@ -144,6 +146,7 @@ program
           {
             name: "2985K - Warm",
             value: (device: IYeelightDevice) => [
+              device.setPower("on", "smooth"),
               device.setColorTemperature(2985),
               device.setBrightness(100),
             ],
@@ -151,6 +154,7 @@ program
           {
             name: "1700K - Warm",
             value: (device: IYeelightDevice) => [
+              device.setPower("on", "smooth"),
               device.setRgb(rgb(255, 121, 0)),
               device.setBrightness(100),
             ],
@@ -168,6 +172,8 @@ program
         .map((device): Promise<IYeelightMethodResponse>[] => preset(device))
         .flat()
     );
+
+    console.log(responses);
 
     if (responses.every((response) => response.status === 200)) {
       console.log(chalk.green("Done with no errors"));

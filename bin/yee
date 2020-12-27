@@ -37330,13 +37330,13 @@ program.command("preset").description("Set devices to the chosen preset").action
     choices: [// https://andi-siess.de/rgb-to-color-temperature/
     {
       name: "4271K - Neutral",
-      value: device => [device.setColorTemperature(4271), device.setBrightness(100)]
+      value: device => [device.setPower("on", "smooth"), device.setColorTemperature(4271), device.setBrightness(100)]
     }, {
       name: "2985K - Warm",
-      value: device => [device.setColorTemperature(2985), device.setBrightness(100)]
+      value: device => [device.setPower("on", "smooth"), device.setColorTemperature(2985), device.setBrightness(100)]
     }, {
       name: "1700K - Warm",
-      value: device => [device.setRgb(rgb(255, 121, 0)), device.setBrightness(100)]
+      value: device => [device.setPower("on", "smooth"), device.setRgb(rgb(255, 121, 0)), device.setBrightness(100)]
     }]
   }]);
   const devices = await getDevices();
