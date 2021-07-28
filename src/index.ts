@@ -159,6 +159,17 @@ program
               device.setBrightness(100),
             ],
           },
+          {
+            name: "Meeting (Neutral – Desk Lamp Only)",
+            value: (device: IYeelightDevice) =>
+              device.id === "0x000000000531bc69"
+                ? [
+                    device.setPower("on", "smooth"),
+                    device.setColorTemperature(4271),
+                    device.setBrightness(100),
+                  ]
+                : [],
+          },
         ],
       },
     ]);
